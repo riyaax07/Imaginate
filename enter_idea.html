@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Story Generator</title>
+<style>
+  /* Root colors (landing/login/signup palette) */
+  :root {
+    --purple1: #9933ff;
+    --purple2: #ab2b8f;
+    --pink: #d63277;
+    --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+    --bg-light: #fbf3fc;
+    --card-bg: #fff;
+    --shadow-light: rgba(102, 61, 255, 0.06);
+    --shadow-md: rgba(102, 61, 255, 0.15);
+    --border-input: #d7e2ea;
+    --text-primary: #3d4a58;
+    --text-secondary: #596979;
+  }
+
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+  a, button {
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+
+  /* Common container */
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+  }
+
+  /* Center vertically and horizontally */
+  .centered-viewport {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  /* Card style */
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Story Input Page */
+  #story-input-page textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border-input);
+    padding: 1rem 1.25rem;
+    font-family: Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    resize: vertical;
+    color: var(--text-primary);
+    background: var(--bg-light);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  #story-input-page textarea::placeholder {
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  #story-input-page textarea:focus {
+    outline: none;
+    border-color: var(--purple1);
+    box-shadow: 0 0 6px var(--purple1);
+  }
+
+  select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--border-input);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  select:focus {
+    outline: none;
+    border-color: var(--purple1);
+    box-shadow: 0 0 6px var(--purple1);
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--purple1);
+    user-select: none;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding: 1rem 2.5rem;
+    border-radius: 32px;
+    border: none;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    text-align: center;
+  }
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* Story Output Page */
+  #story-output-page {
+    padding: 3rem 1rem 5rem;
+  }
+  #story-output-page h1 {
+    text-align: center;
+    font-weight: 900;
+    font-size: 2.25rem;
+    margin-bottom: 3rem;
+    color: var(--purple1);
+    user-select: none;
+  }
+
+  .scene-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    margin-bottom: 3rem;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(40px);
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+  }
+  /* Fade-in animation on scroll using CSS only: 
+     We'll simulate with animation-delay for demo (no JS) */
+  .scene-card:nth-child(1) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.1s;
+  }
+  .scene-card:nth-child(2) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.3s;
+  }
+  .scene-card:nth-child(3) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.5s;
+  }
+  .scene-card:nth-child(4) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.7s;
+  }
+  .scene-card:nth-child(5) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.9s;
+  }
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scene-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .scene-content {
+    padding: 1.75rem 2.25rem 2.5rem;
+    color: var(--text-primary);
+  }
+
+  .scene-progress {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--purple1);
+    margin-bottom: 0.75rem;
+    user-select: none;
+  }
+
+  .scene-text {
+    font-family: Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    text-align: justify;
+    margin: 0;
+    color: var(--text-primary);
+  }
+  .scene-text::first-letter {
+    float: left;
+    font-size: 3.75rem;
+    line-height: 1;
+    padding-right: 0.15em;
+    padding-left: 0.05em;
+    font-weight: 700;
+    color: var(--purple1);
+    font-family: Georgia, serif;
+  }
+
+  /* Output buttons container */
+  .output-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .output-buttons button {
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 0.85rem 2.5rem;
+    border-radius: 32px;
+    border: none;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    cursor: pointer;
+  }
+  .output-buttons button:hover,
+  .output-buttons button:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* "Turn it into a Podcast" button is a link styled as button */
+  .btn-link {
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 0.85rem 2.5rem;
+    border-radius: 32px;
+    border: none;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-link:hover,
+  .btn-link:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .card {
+      max-width: 100%;
+      padding: 1.5rem 1.75rem;
+    }
+    #story-input-page textarea {
+      min-height: 120px;
+      font-size: 1rem;
+    }
+    select {
+      font-size: 0.95rem;
+    }
+    #story-output-page h1 {
+      font-size: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .scene-content {
+      padding: 1.25rem 1.5rem 2rem;
+    }
+    .scene-text {
+      font-size: 1rem;
+    }
+    .scene-text::first-letter {
+      font-size: 3rem;
+    }
+    .output-buttons {
+      gap: 1rem;
+    }
+    .output-buttons button,
+    .btn-link {
+      font-size: 1rem;
+      padding: 0.75rem 2rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Story Input Page -->
+<section id="story-input-page" class="centered-viewport" aria-label="Story Input Page">
+  <form class="card" aria-describedby="input-desc" novalidate>
+    <label for="story-textarea">Enter your story idea here...</label>
+    <textarea id="story-textarea" name="story" placeholder="Enter your story idea here..." required aria-required="true"></textarea>
+
+    <label for="genre-select">Genre</label>
+    <select id="genre-select" name="genre" required aria-required="true">
+      <option value="" disabled selected>Select genre</option>
+      <option>Fantasy</option>
+      <option>Sci-Fi</option>
+      <option>Mystery</option>
+      <option>Comedy</option>
+      <option>Romance</option>
+      <option>Horror</option>
+    </select>
+
+    <label for="tone-select">Tone</label>
+    <select id="tone-select" name="tone" required aria-required="true">
+      <option value="" disabled selected>Select tone</option>
+      <option>Dark</option>
+      <option>Lighthearted</option>
+      <option>Epic</option>
+      <option>Humorous</option>
+      <option>Serious</option>
+    </select>
+
+    <label for="audience-select">Target Audience</label>
+    <select id="audience-select" name="audience" required aria-required="true">
+      <option value="" disabled selected>Select audience</option>
+      <option>Kids</option>
+      <option>Teens</option>
+      <option>Adults</option>
+    </select>
+
+    <button type="submit" class="btn-primary" aria-label="Generate Story">Generate Story</button>
+  </form>
+</section>
+
+<!-- Story Output Page -->
+<section id="story-output-page" class="container" aria-label="Story Output Page" hidden>
+  <h1>Your Generated Story</h1>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 1 of 5</div>
+      <p class="scene-text">In the heart of the enchanted forest, the trees whispered secrets of ancient magic.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 2 of 5</div>
+      <p class="scene-text">The hero ventured through the misty mountains, guided only by the stars above.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 3 of 5</div>
+      <p class="scene-text">At the edge of the world, a mysterious portal shimmered, promising new adventures.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 4 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+4" alt="Scene 4 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 4 of 5</div>
+      <p class="scene-text">The journey led to an ancient city lost in time, filled with wonders and dangers alike.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 5 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+5" alt="Scene 5 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 5 of 5</div>
+      <p class="scene-text">In the final confrontation, courage and friendship proved stronger than any dark force.</p>
+    </div>
+  </article>
+
+  <div class="output-buttons" role="group" aria-label="Story output actions">
+    <button type="button" aria-label="Download story as PDF">Download as PDF</button>
+    <button type="button" aria-label="Save story to library">Save to Library</button>
+    <a href="#podcast" class="btn-link" aria-label="Turn story into a podcast">🎙️ Turn it into a Podcast</a>
+  </div>
+</section>
+
+<!-- Podcast Overlay (modal-like) -->
+<section id="podcast" aria-label="Podcast Mode" tabindex="-1">
+  <header>Podcast Mode 🎧</header>
+  <div class="podcast-card" role="region" aria-label="Podcast player">
+    <div class="podcast-cover">
+      <img src="https://via.placeholder.com/600x400?text=Podcast+Cover" alt="Podcast cover image" />
+    </div>
+    <div class="podcast-title">Your Generated Story Podcast</div>
+    <div class="audio-player" aria-label="Audio player controls">
+      <button class="play" aria-label="Play podcast"></button>
+      <button class="pause" aria-label="Pause podcast"></button>
+    </div>
+  </div>
+  <a href="#story-output-page" id="back-to-story" class="btn-link" aria-label="Back to story output">⬅ Back to Story</a>
+</section>
+
+<style>
+  /* Podcast Overlay styles */
+  #podcast {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    z-index: 9999;
+  }
+  #podcast:target {
+    display: flex;
+  }
+  #podcast header {
+    font-weight: 900;
+    font-size: 2.25rem;
+    color: var(--purple1);
+    margin-bottom: 2rem;
+    user-select: none;
+    text-align: center;
+  }
+  .podcast-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    max-width: 480px;
+    width: 100%;
+    padding: 2rem 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .podcast-cover {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--shadow-md);
+  }
+  .podcast-cover img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .podcast-title {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--pink);
+    text-align: center;
+    user-select: none;
+  }
+  .audio-player {
+    width: 100%;
+    background: #f3e9f9;
+    border-radius: 24px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    box-shadow: 0 0 12px var(--pink);
+  }
+  .audio-player button {
+    background: var(--pink);
+    border: none;
+  }
