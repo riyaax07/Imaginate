@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Text-to-Image Story Generator</title>
+<link rel="stylesheet" href="tr.css" />
+</head>
+<body>
+<header>
+  <nav aria-label="Primary navigation">
+    <a href="#landing" class="logo" aria-label="Navigate to landing page">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" >
+        <path d="M12 2C9.243 2 7 4.243 7 7c0 0.553.448 1 1 1s1-.447 1-1c0-1.657 1.343-3 3-3s3 1.343 3 3c0 .553.447 1 1 1s1-.447 1-1c0-2.757-2.243-5-5-5zm6 15a2 2 0 1 0-4 0 2 2 0 0 0 4 0zm-8 3a1 1 0 0 1 0-2H6v-1a3 3 0 0 0 3-3 3 3 0 0 0-3-3H5a1 1 0 0 1 0-2h1a5 5 0 0 1 5 5 5 5 0 0 1-5 5v1a1 1 0 0 1-1 1zm8-6a4 4 0 1 0-8 0 1 1 0 0 0 2 0 2 2 0 1 1 4 0 1 1 0 0 0 2 0z"/>
+      </svg>
+      Imaginate
+    </a>
+  </nav>
+</header>
+
+<main>
+  <!-- Landing content -->
+  <section id="landing" class="landing-content" tabindex="-1">
+    <header>
+      <h1>Text-to-Image Story Generator</h1>
+      <p class="subtitle">
+        Transform your creative ideas into beautiful, illustrated stories with AI-powered generation. Choose your style, set the tone, and watch your imagination come to life.
+      </p>
+    </header>
+    <nav class="btn-container" aria-label="Authentication actions">
+      <a href="#signup" class="btn btn-signup" role="button" aria-haspopup="dialog" aria-controls="signup" aria-expanded="false">Sign Up</a>
+      <a href="#login" class="btn btn-login" role="button" aria-haspopup="dialog" aria-controls="login" aria-expanded="false">Login</a>
+    </nav>
+  </section>
+
+  <!-- Feature Section -->
+  <section class="features" aria-labelledby="features-title" id="features">
+    <h2 id="features-title" class="sr-only">Features of StoryGen</h2>
+    <div class="features-list">
+      <article class="feature-card" tabindex="0" aria-label="AI-Powered Generation feature">
+        <div class="feature-icon" aria-hidden="true" title="AI spark icon">✨</div>
+        <h3 class="feature-title">AI-Powered Generation</h3>
+        <p class="feature-desc">Advanced AI creates unique stories and stunning visuals from your ideas</p>
+      </article>
+      <article class="feature-card" tabindex="0" aria-label="Multiple Art Styles feature">
+        <div class="feature-icon" aria-hidden="true" title="Palette icon">🎨</div>
+        <h3 class="feature-title">Multiple Art Styles</h3>
+        <p class="feature-desc">Choose from cartoon, anime, realistic, or watercolor art styles</p>
+      </article>
+      <article class="feature-card" tabindex="0" aria-label="Export and Share feature">
+        <div class="feature-icon" aria-hidden="true" title="Book icon">📖</div>
+        <h3 class="feature-title">Export &amp; Share</h3>
+        <p class="feature-desc">Export your stories as PDF or share them with friends and family</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<!-- Login Modal -->
+<section id="login" class="modal" role="dialog" aria-modal="true" aria-labelledby="login-title" tabindex="-1">
+  <a href="#landing" class="modal-close" aria-label="Close Login modal" tabindex="0">&times;</a>
+  <form method="post" action="#" autocomplete="off" novalidate>
+    <h2 id="login-title">Welcome Back</h2>
+    <p class="form-subtitle">Sign in to your account to continue creating stories</p>
+    <label for="login-email">Email</label>
+    <input id="login-email" type="email" name="email" placeholder="Enter your email" required autocomplete="email" />
+    <label for="login-password">Password</label>
+    <input id="login-password" type="password" name="password" placeholder="Enter your password" required autocomplete="current-password" />
+    <input type="submit" value="Login" />
+    <p class="modal-footer">Don't have an account? <a href="#signup" role="button" aria-haspopup="dialog" aria-controls="signup">Sign Up</a></p>
+  </form>
+</section>
+
+<!-- Sign Up Modal -->
+<section id="signup" class="modal" role="dialog" aria-modal="true" aria-labelledby="signup-title" tabindex="-1">
+  <a href="#landing" class="modal-close" aria-label="Close Sign Up modal" tabindex="0">&times;</a>
+  <form method="post" action="#" autocomplete="off" novalidate>
+    <h2 id="signup-title">Create Account</h2>
+    <p class="form-subtitle">Join us and start creating amazing illustrated stories</p>
+    <label for="signup-fullname">Full Name</label>
+    <input id="signup-fullname" type="text" name="fullname" placeholder="Enter your full name" required autocomplete="name" />
+    <label for="signup-email">Email</label>
+    <input id="signup-email" type="email" name="email" placeholder="Enter your email" required autocomplete="email" />
+    <label for="signup-password">Password</label>
+    <input id="signup-password" type="password" name="password" placeholder="Create a password" required autocomplete="new-password" />
+    <label for="signup-confirm-password">Confirm Password</label>
+    <input id="signup-confirm-password" type="password" name="confirm-password" placeholder="Confirm your password" required autocomplete="new-password" />
+    <input type="submit" value="Create Account" />
+    <p class="modal-footer">Already have an account? <a href="#login" role="button" aria-haspopup="dialog" aria-controls="login">Login</a></p>
+  </form>
+</section>
+
+<!-- Modal overlay (needed for visual shading and to catch clicks behind modal) -->
+<div class="modal-overlay" tabindex="-1" aria-hidden="true"></div>
+
+
+
+</body>
+</html>
