@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Story & Podcast Overlay</title>
+<style>
+  /* Root colors (landing page light/classy palette) */
+  :root {
+    --purple1: #9933ff;
+    --purple2: #ab2b8f;
+    --pink: #d63277;
+    --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+    --bg-light: #fbf3fc;
+    --card-bg: #fff;
+    --shadow-light: rgba(102, 61, 255, 0.06);
+    --shadow-md: rgba(102, 61, 255, 0.1);
+    --border-input: #d7e2ea;
+    --text-primary: #3d4a58;
+    --text-secondary: #596979;
+  }
+
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  a:focus, button:focus {
+    outline: 2px solid var(--pink);
+    outline-offset: 2px;
+  }
+
+  /* Container */
+  #story {
+    max-width: 700px;
+    margin: 3rem auto 5rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  #story h1 {
+    font-weight: 900;
+    font-size: 2.25rem;
+    margin-bottom: 2rem;
+    user-select: none;
+    color: var(--purple1);
+  }
+
+  /* Scene card */
+  .scene-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    margin-bottom: 3rem;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .scene-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+
+  .scene-content {
+    padding: 1.75rem 2.25rem 2.5rem;
+  }
+
+  .scene-progress {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--purple1);
+    margin-bottom: 0.75rem;
+    user-select: none;
+  }
+
+  .scene-text {
+    font-family: Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    text-align: justify;
+    margin: 0;
+    color: var(--text-primary);
+  }
+  .scene-text::first-letter {
+    float: left;
+    font-size: 3.75rem;
+    line-height: 1;
+    padding-right: 0.15em;
+    padding-left: 0.05em;
+    font-weight: 700;
+    color: var(--purple1);
+    font-family: Georgia, serif;
+  }
+
+  /* Turn it into a Podcast button */
+  #to-podcast-btn {
+    display: inline-block;
+    margin: 0 auto;
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding: 1rem 3rem;
+    border-radius: 32px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--pink);
+    text-align: center;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    user-select: none;
+    text-decoration: none;
+  }
+  #to-podcast-btn:hover,
+  #to-podcast-btn:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* Podcast Overlay */
+  #podcast {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    z-index: 9999;
+  }
+  #podcast:target {
+    display: flex;
+  }
+
+  #podcast header {
+    font-weight: 900;
+    font-size: 2.25rem;
+    color: var(--purple1);
+    margin-bottom: 2rem;
+    user-select: none;
+    text-align: center;
+  }
+
+  .podcast-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    max-width: 480px;
+    width: 100%;
+    padding: 2rem 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .podcast-cover {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--shadow-md);
+  }
+  .podcast-cover img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .podcast-title {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--pink);
+    text-align: center;
+    user-select: none;
+  }
+
+  /* Audio player UI (CSS only) */
+  .audio-player {
+    width: 100%;
+    background: #f3e9f9;
+    border-radius: 24px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    box-shadow: 0 0 12px var(--pink);
+  }
+  .audio-player button {
+    background: var(--pink);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--pink);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    position: relative;
+  }
+  .audio-player button:hover,
+  .audio-player button:focus-visible {
+    background-color: #d94a8a;
+    box-shadow: 0 0 20px var(--pink);
+    outline: none;
+  }
+  /* Play icon */
+  .audio-player button.play::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 14px;
+    border-style: solid;
+    border-width: 10px 0 10px 16px;
+    border-color: transparent transparent transparent white;
+  }
+  /* Pause icon */
+  .audio-player button.pause::before,
+  .audio-player button.pause::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    width: 6px;
+    height: 20px;
+    background: white;
+  }
+  .audio-player button.pause::before {
+    left: 14px;
+  }
+  .audio-player button.pause::after {
+    left: 26px;
+  }
+
+  /* Back to Story button */
+  #back-to-story {
+    margin-top: 2rem;
+    background: transparent;
+    color: var(--purple1);
+    font-weight: 600;
+    font-size: 1rem;
+    border: 2px solid var(--purple1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--purple1);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  #back-to-story:hover,
+  #back-to-story:focus-visible {
+    background: var(--purple1);
+    color: white;
+    box-shadow: 0 0 16px var(--pink);
+    outline: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    #story {
+      margin: 2rem 1rem 4rem;
+      padding: 0;
+    }
+    .scene-content {
+      padding: 1.25rem 1.5rem 2rem;
+    }
+    .scene-text {
+      font-size: 1rem;
+    }
+    .scene-text::first-letter {
+      font-size: 3rem;
+    }
+    #to-podcast-btn {
+      font-size: 1.1rem;
+      padding: 0.85rem 2.5rem;
+    }
+    .podcast-card {
+      max-width: 100%;
+      padding: 1.5rem 1.75rem 2rem;
+    }
+    .audio-player button {
+      width: 40px;
+      height: 40px;
+    }
+    .audio-player button.play::before {
+      left: 14px;
+      top: 12px;
+      border-width: 8px 0 8px 12px;
+    }
+    .audio-player button.pause::before,
+    .audio-player button.pause::after {
+      top: 12px;
+      width: 5px;
+      height: 16px;
+    }
+    .audio-player button.pause::before {
+      left: 12px;
+    }
+    .audio-player button.pause::after {
+      left: 22px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<section id="story" tabindex="0" aria-label="Your Story">
+  <h1>Your Story</h1>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 3">
+    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 1 of 3</div>
+      <p class="scene-text">In the heart of the enchanted forest, the trees whispered secrets of ancient magic.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 3">
+    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 2 of 3</div>
+      <p class="scene-text">The hero ventured through the misty mountains, guided only by the stars above.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 3">
+    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" />
+    <div class="scene-content">
+      <div class="scene-progress">Scene 3 of 3</div>
+      <p class="scene-text">At the edge of the world, a mysterious portal shimmered, promising new adventures.</p>
+    </div>
+  </article>
+
+  <a href="#podcast" id="to-podcast-btn" role="button" aria-label="Turn story into podcast">🎙️ Turn it into a Podcast</a>
+</section>
+
+<section id="podcast" tabindex="-1" aria-label="Podcast Mode" >
+  <header>Podcast Mode 🎧</header>
+  <div class="podcast-card" role="region" aria-label="Podcast player">
+    <div class="podcast-cover">
+      <img src="https://via.placeholder.com/600x400?text=Podcast+Cover" alt="Podcast cover image" />
+    </div>
+    <div class="podcast-title">Your Generated Story Podcast</div>
+    <div class="audio-player" aria-label="Audio player controls">
+      <button class="play" aria-label="Play podcast"></button>
+      <button class="pause" aria-label="Pause podcast"></button>
+    </div>
+  </div>
+  <a href="#story" id="back-to-story" role="button" aria-label="Back to story screen">⬅ Back to Story</a>
+</section>
+
+</body>
+</html>

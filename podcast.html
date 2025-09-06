@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Story-as-Podcast 🎙️</title>
+<style>
+  /* Reset & base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: #faf6fd;
+    color: #3d4a58;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a, button {
+    font-family: inherit;
+  }
+  h1, h2, h3 {
+    margin: 0;
+  }
+
+  /* Scrollbar for light theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #fbf3fc;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #9933ff;
+    border-radius: 4px;
+  }
+
+  /* Color variables */
+  :root {
+    --purple1: #9933ff;
+    --purple2: #ab2b8f;
+    --pink: #d63277;
+    --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+    --bg-light: #fbf3fc;
+    --card-bg: #fff;
+    --shadow-light: rgba(102,61,255,0.06);
+    --shadow-md: rgba(102,61,255,0.1);
+    --border-input: #d7e2ea;
+    --text-primary: #3d4a58;
+    --text-secondary: #596979;
+  }
+
+  /* Header */
+  header {
+    background: var(--bg-light);
+    padding: 1.5rem 1rem 1.25rem;
+    text-align: center;
+    box-shadow: 0 2px 8px var(--shadow-md);
+    user-select: none;
+  }
+  header h1 {
+    font-weight: 900;
+    font-size: 2rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.25rem;
+  }
+  header p {
+    font-weight: 400;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Main container */
+  main {
+    flex: 1 0 auto;
+    max-width: 960px;
+    margin: 2rem auto 3rem;
+    padding: 0 1rem;
+    width: 100%;
+  }
+
+  /* Section titles */
+  h2.section-title {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--purple1);
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+
+  /* Podcast Generator Section */
+  #podcast-generator {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem 1.5rem 2rem;
+    box-shadow: 0 10px 20px var(--shadow-md);
+    margin-bottom: 3rem;
+  }
+  #podcast-generator label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    user-select: none;
+  }
+  #podcast-generator select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-input);
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: inherit;
+  }
+  #podcast-generator select:focus {
+    outline: none;
+    border-color: var(--purple1);
+    box-shadow: 0 0 6px var(--purple1);
+  }
+
+  #generate-btn {
+    display: inline-block;
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 0.75rem 2rem;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--pink);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    user-select: none;
+  }
+  #generate-btn:hover,
+  #generate-btn:focus-visible {
+    background: #b63a9b;
+    box-shadow: 0 0 16px var(--pink);
+    outline: none;
+  }
+
+  /* Audio player container */
+  #audio-player-container {
+    margin-top: 2rem;
+    display: none;
+    justify-content: center;
+  }
+  #audio-player-container audio {
+    width: 100%;
+    max-width: 480px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px var(--shadow-md);
+    outline-offset: 4px;
+  }
+
+  /* Podcast Episodes Section */
+  #podcast-episodes {
+    margin-bottom: 3rem;
+  }
+  #podcast-episodes .episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 1.5rem;
+  }
+  .episode-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem 1.75rem;
+    box-shadow: 0 10px 20px var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .episode-card h3 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--purple1);
+    margin-bottom: 0.5rem;
+  }
+  .episode-card p {
+    flex-grow: 1;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.4;
+  }
+  .episode-card button.play-btn {
+    align-self: center;
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--pink);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    user-select: none;
+  }
+  .episode-card button.play-btn:hover,
+  .episode-card button.play-btn:focus-visible {
+    background: #b63a9b;
+    box-shadow: 0 0 16px var(--pink);
+    outline: none;
+  }
+
+  /* Modal */
+  #modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1rem;
+  }
+  #modal.active {
+    display: flex;
+  }
+  #modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem 2.5rem 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--purple1);
+    font-size: 1.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+  #modal-close:hover,
+  #modal-close:focus-visible {
+    color: var(--pink);
+    outline: none;
+  }
+  #modal audio {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px var(--shadow-md);
+    outline-offset: 4px;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--bg-light);
+    text-align: center;
+    padding: 1rem 1rem;
+    font-size: 0.9rem;
+    color: var(--purple1);
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 480px) {
+    header h1 {
+      font-size: 1.5rem;
+    }
+    header p {
+      font-size: 0.9rem;
+    }
+    #generate-btn {
+      width: 100%;
+      padding: 0.75rem 0;
+    }
+    #podcast-generator {
+      padding: 1.25rem 1rem 1.75rem;
+    }
+    #modal-content {
+      padding: 1.5rem 1.75rem 2rem;
+    }
+  }
+
+  /* Screen reader only helper */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Story-as-Podcast 🎙️</h1>
+  <p>Turn your AI story into a narrated podcast with music.</p>
+</header>
+
+<main>
+  <section id="podcast-generator" aria-label="Podcast Generator">
+    <h2 class="section-title">Generate Your Podcast</h2>
+    <form id="generator-form" onsubmit="return false;" aria-describedby="generator-desc">
+      <label for="voice-select">Select Narrator Voice</label>
+      <select id="voice-select" name="voice" aria-required="true" required>
+        <option value="calm">Calm</option>
+        <option value="dramatic">Dramatic</option>
+        <option value="funny">Funny</option>
+      </select>
+
+      <label for="music-select">Select Background Music</label>
+      <select id="music-select" name="music" aria-required="true" required>
+        <option value="fantasy">Fantasy</option>
+        <option value="scifi">Sci-Fi</option>
+        <option value="horror">Horror</option>
+      </select>
+
+      <button id="generate-btn" type="submit" aria-live="polite" aria-atomic="true">Generate Podcast</button>
+    </form>
+
+    <div id="audio-player-container" aria-live="polite" aria-atomic="true" aria-label="Generated podcast audio player">
+      <audio controls preload="none" id="generated-audio" src="" aria-describedby="audio-desc"></audio>
+      <p id="audio-desc" class="sr-only">Audio player for generated podcast</p>
+    </div>
+  </section>
+
+  <section id="podcast-episodes" aria-label="Your Podcast Episodes">
+    <h2 class="section-title">Your Podcast Episodes</h2>
+    <div class="episodes-grid">
+      <article class="episode-card" tabindex="0" aria-label="Episode 1: The Enchanted Forest">
+        <h3>Episode 1: The Enchanted Forest</h3>
+        <p>Explore a magical forest where every tree tells a story.</p>
+        <button class="play-btn" type="button" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" data-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Play</button>
+      </article>
+
+      <article class="episode-card" tabindex="0" aria-label="Episode 2: Space Odyssey">
+        <h3>Episode 2: Space Odyssey</h3>
+        <p>Join the crew on a thrilling journey through the stars.</p>
+        <button class="play-btn" type="button" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" data-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Play</button>
+      </article>
+
+      <article class="episode-card" tabindex="0" aria-label="Episode 3: Haunted Mansion">
+        <h3>Episode 3: Haunted Mansion</h3>
+        <p>Uncover the secrets hidden within the eerie mansion walls.</p>
+        <button class="play-btn" type="button" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" data-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">Play</button>
+      </article>
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" tabindex="-1">
+  <div id="modal-content">
+    <button id="modal-close" aria-label="Close modal">&times;</button>
+    <h3 id="modal-title" style="color:var(--purple1); margin-bottom:1rem; user-select:none;">Playing Episode</h3>
+    <audio controls preload="auto" id="modal-audio" src=""></audio>
+    <p id="modal-desc" class="sr-only">Audio player for selected podcast episode</p>
+  </div>
+</div>
+
+<footer>
+  © 2025 Story Generator Plant – Listen. Imagine. Share.
+</footer>
+
+<script>
+  (() => {
+    const generateBtn = document.getElementById('generate-btn');
+    const audioContainer = document.getElementById('audio-player-container');
+    const generatedAudio = document.getElementById('generated-audio');
+
+    // Sample placeholder audio URL for generated podcast
+    const sampleAudioURL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3";
+
+    generateBtn.addEventListener('click', () => {
+      generatedAudio.src = sampleAudioURL;
+      generatedAudio.load();
+      audioContainer.style.display = 'flex';
+      generatedAudio.focus();
+      generatedAudio.play().catch(() => {});
+    });
+
+    // Modal elements
+    const modal = document.getElementById('modal');
+    const modalCloseBtn = document.getElementById('modal-close');
+    const modalAudio = document.getElementById('modal-audio');
+    const playButtons = document.querySelectorAll('.play-btn');
+
+    playButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const audioSrc = btn.getAttribute('data-audio');
+        if (!audioSrc) return;
+        modalAudio.src = audioSrc;
+        modalAudio.load();
+        modal.classList.add('active');
+        modalAudio.focus();
+        modalAudio.play().catch(() => {});
+        btn.setAttribute('aria-expanded', 'true');
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modalAudio.pause();
+      modalAudio.src = "";
+      playButtons.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+      generateBtn.focus();
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    modal.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
