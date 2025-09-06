@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Story & Podcast Overlay</title>
+<title>Story Output Page</title>
 <style>
-  /* Root colors (landing page light/classy palette) */
+  /* Root colors (landing/login/signup palette) */
   :root {
     --purple1: #9933ff;
-    --purple2: #ab2b8f;
     --pink: #d63277;
     --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
     --bg-light: #fbf3fc;
     --card-bg: #fff;
     --shadow-light: rgba(102, 61, 255, 0.06);
-    --shadow-md: rgba(102, 61, 255, 0.1);
-    --border-input: #d7e2ea;
+    --shadow-md: rgba(102, 61, 255, 0.15);
+    --border-light: #d7e2ea;
     --text-primary: #3d4a58;
     --text-secondary: #596979;
   }
@@ -32,60 +31,122 @@
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    scroll-behavior: smooth;
+    min-height: 100vh;
   }
-  a {
-    color: inherit;
-    text-decoration: none;
+  a, button {
+    font-family: inherit;
   }
-  a:focus, button:focus {
-    outline: 2px solid var(--pink);
-    outline-offset: 2px;
+  button {
+    cursor: pointer;
   }
 
   /* Container */
-  #story {
+  .container {
     max-width: 700px;
     margin: 3rem auto 5rem;
     padding: 0 1rem;
-    text-align: center;
   }
 
-  #story h1 {
+  h1 {
+    text-align: center;
     font-weight: 900;
     font-size: 2.25rem;
-    margin-bottom: 2rem;
-    user-select: none;
+    margin-bottom: 3rem;
     color: var(--purple1);
+    user-select: none;
   }
 
-  /* Scene card */
+  /* Scene Cards */
   .scene-card {
     background: var(--card-bg);
     border-radius: 16px;
     box-shadow: 0 10px 30px var(--shadow-md);
     margin-bottom: 3rem;
     overflow: hidden;
-    text-align: left;
+    padding-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(40px);
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .scene-card:hover,
+  .scene-card:focus-within {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px var(--pink);
+  }
+  /* Fade-in animation with stagger */
+  .scene-card:nth-child(1) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.1s;
+  }
+  .scene-card:nth-child(2) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.3s;
+  }
+  .scene-card:nth-child(3) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.5s;
+  }
+  .scene-card:nth-child(4) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.7s;
+  }
+  .scene-card:nth-child(5) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.9s;
+  }
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .scene-card img {
+  .scene-image {
     width: 100%;
-    height: auto;
+    border-radius: 16px 16px 0 0;
+    border: 1.5px solid var(--border-light);
     display: block;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+  }
+
+  .regenerate-btn {
+    margin: 0.75rem 1.5rem 1.5rem;
+    background: var(--purple1);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--purple1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    display: inline-block;
+  }
+  .regenerate-btn:hover,
+  .regenerate-btn:focus-visible {
+    background-color: var(--pink);
+    box-shadow: 0 0 20px var(--pink);
+    outline: none;
   }
 
   .scene-content {
-    padding: 1.75rem 2.25rem 2.5rem;
+    padding: 0 2.25rem 0;
+    color: var(--text-primary);
   }
 
   .scene-progress {
     font-weight: 700;
     font-size: 1rem;
     color: var(--purple1);
-    margin-bottom: 0.75rem;
+    margin: 1rem 0 0.75rem 0;
     user-select: none;
   }
 
@@ -94,7 +155,7 @@
     font-size: 1.125rem;
     line-height: 1.75;
     text-align: justify;
-    margin: 0;
+    margin: 0 0 1rem 0;
     color: var(--text-primary);
   }
   .scene-text::first-letter {
@@ -108,26 +169,35 @@
     font-family: Georgia, serif;
   }
 
-  /* Turn it into a Podcast button */
-  #to-podcast-btn {
-    display: inline-block;
-    margin: 0 auto;
+  /* Bottom buttons container */
+  .bottom-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .bottom-buttons button,
+  .bottom-buttons a.btn-link {
     background: var(--gradient);
     color: white;
     font-weight: 700;
-    font-size: 1.25rem;
-    padding: 1rem 3rem;
+    font-size: 1.125rem;
+    padding: 0.85rem 2.5rem;
     border-radius: 32px;
     border: none;
-    cursor: pointer;
     box-shadow: 0 0 12px var(--pink);
-    text-align: center;
-    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     user-select: none;
+    cursor: pointer;
+    text-align: center;
     text-decoration: none;
+    display: inline-block;
   }
-  #to-podcast-btn:hover,
-  #to-podcast-btn:focus-visible {
+  .bottom-buttons button:hover,
+  .bottom-buttons button:focus-visible,
+  .bottom-buttons a.btn-link:hover,
+  .bottom-buttons a.btn-link:focus-visible {
     background-color: #b63a9b;
     box-shadow: 0 0 24px var(--pink);
     outline: none;
@@ -192,7 +262,6 @@
     user-select: none;
   }
 
-  /* Audio player UI (CSS only) */
   .audio-player {
     width: 100%;
     background: #f3e9f9;
@@ -276,12 +345,20 @@
 
   /* Responsive */
   @media (max-width: 480px) {
-    #story {
+    .container {
       margin: 2rem 1rem 4rem;
-      padding: 0;
+      max-width: 100%;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .scene-card {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
     }
     .scene-content {
-      padding: 1.25rem 1.5rem 2rem;
+      padding: 0 1.5rem 0;
     }
     .scene-text {
       font-size: 1rem;
@@ -289,13 +366,18 @@
     .scene-text::first-letter {
       font-size: 3rem;
     }
-    #to-podcast-btn {
-      font-size: 1.1rem;
-      padding: 0.85rem 2.5rem;
+    .regenerate-btn {
+      margin: 0.5rem 1rem 1rem;
+      font-size: 0.85rem;
+      padding: 0.4rem 1rem;
     }
-    .podcast-card {
-      max-width: 100%;
-      padding: 1.5rem 1.75rem 2rem;
+    .bottom-buttons {
+      gap: 1rem;
+    }
+    .bottom-buttons button,
+    .bottom-buttons a.btn-link {
+      font-size: 1rem;
+      padding: 0.75rem 2rem;
     }
     .audio-player button {
       width: 40px;
@@ -323,37 +405,63 @@
 </head>
 <body>
 
-<section id="story" tabindex="0" aria-label="Your Story">
-  <h1>Your Story</h1>
+<div class="container" aria-label="Story Output Page">
+  <h1>Your Generated Story</h1>
 
-  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 3">
-    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" />
+  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 1">🔄 Regenerate Image</button>
     <div class="scene-content">
-      <div class="scene-progress">Scene 1 of 3</div>
+      <div class="scene-progress">Scene 1 of 5</div>
       <p class="scene-text">In the heart of the enchanted forest, the trees whispered secrets of ancient magic.</p>
     </div>
   </article>
 
-  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 3">
-    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" />
+  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 2">🔄 Regenerate Image</button>
     <div class="scene-content">
-      <div class="scene-progress">Scene 2 of 3</div>
+      <div class="scene-progress">Scene 2 of 5</div>
       <p class="scene-text">The hero ventured through the misty mountains, guided only by the stars above.</p>
     </div>
   </article>
 
-  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 3">
-    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" />
+  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 3">🔄 Regenerate Image</button>
     <div class="scene-content">
-      <div class="scene-progress">Scene 3 of 3</div>
+      <div class="scene-progress">Scene 3 of 5</div>
       <p class="scene-text">At the edge of the world, a mysterious portal shimmered, promising new adventures.</p>
     </div>
   </article>
 
-  <a href="#podcast" id="to-podcast-btn" role="button" aria-label="Turn story into podcast">🎙️ Turn it into a Podcast</a>
-</section>
+  <article class="scene-card" tabindex="0" aria-label="Scene 4 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+4" alt="Scene 4 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 4">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 4 of 5</div>
+      <p class="scene-text">The journey led to an ancient city lost in time, filled with wonders and dangers alike.</p>
+    </div>
+  </article>
 
-<section id="podcast" tabindex="-1" aria-label="Podcast Mode" >
+  <article class="scene-card" tabindex="0" aria-label="Scene 5 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+5" alt="Scene 5 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 5">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 5 of 5</div>
+      <p class="scene-text">In the final confrontation, courage and friendship proved stronger than any dark force.</p>
+    </div>
+  </article>
+
+  <div class="bottom-buttons" role="group" aria-label="Story output actions">
+    <button type="button" aria-label="Download story as PDF">⬇️ Download as PDF</button>
+    <button type="button" aria-label="Save story to library">💾 Save to Library</button>
+    <a href="#podcast" class="btn-link" aria-label="Turn story into a podcast">🎙️ Turn it into a Podcast</a>
+  </div>
+</div>
+
+<!-- Podcast Overlay -->
+<section id="podcast" aria-label="Podcast Mode" tabindex="-1">
   <header>Podcast Mode 🎧</header>
   <div class="podcast-card" role="region" aria-label="Podcast player">
     <div class="podcast-cover">
@@ -365,8 +473,28 @@
       <button class="pause" aria-label="Pause podcast"></button>
     </div>
   </div>
-  <a href="#story" id="back-to-story" role="button" aria-label="Back to story screen">⬅ Back to Story</a>
+  <a href="#" id="back-to-story" class="btn-link" aria-label="Back to story output">⬅ Back to Story</a>
 </section>
 
-</body>
-</html>
+<style>
+  /* Podcast Overlay styles */
+  #podcast {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    z-index: 9999;
+  }
+  #podcast:target {
+    display: flex;
+  }
+  #podcast header {
+    font-weight: 900;
+    font-size: 2.25rem;
+    color: var(--purple1);
+    margin-bottom: 2
