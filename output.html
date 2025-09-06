@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Story Output Page</title>
+<style>
+  /* Root colors (landing/login/signup palette) */
+  :root {
+    --purple1: #9933ff;
+    --pink: #d63277;
+    --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+    --bg-light: #fbf3fc;
+    --card-bg: #fff;
+    --shadow-light: rgba(102, 61, 255, 0.06);
+    --shadow-md: rgba(102, 61, 255, 0.15);
+    --border-light: #d7e2ea;
+    --text-primary: #3d4a58;
+    --text-secondary: #596979;
+  }
+
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+  a, button {
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+
+  /* Container */
+  .container {
+    max-width: 700px;
+    margin: 3rem auto 5rem;
+    padding: 0 1rem;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 900;
+    font-size: 2.25rem;
+    margin-bottom: 3rem;
+    color: var(--purple1);
+    user-select: none;
+  }
+
+  /* Scene Cards */
+  .scene-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    margin-bottom: 3rem;
+    overflow: hidden;
+    padding-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(40px);
+    animation-fill-mode: forwards;
+    animation-timing-function: ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .scene-card:hover,
+  .scene-card:focus-within {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px var(--pink);
+  }
+  /* Fade-in animation with stagger */
+  .scene-card:nth-child(1) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.1s;
+  }
+  .scene-card:nth-child(2) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.3s;
+  }
+  .scene-card:nth-child(3) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.5s;
+  }
+  .scene-card:nth-child(4) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.7s;
+  }
+  .scene-card:nth-child(5) {
+    animation-name: fadeInUp;
+    animation-duration: 0.8s;
+    animation-delay: 0.9s;
+  }
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scene-image {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    border: 1.5px solid var(--border-light);
+    display: block;
+  }
+
+  .regenerate-btn {
+    margin: 0.75rem 1.5rem 1.5rem;
+    background: var(--purple1);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--purple1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    display: inline-block;
+  }
+  .regenerate-btn:hover,
+  .regenerate-btn:focus-visible {
+    background-color: var(--pink);
+    box-shadow: 0 0 20px var(--pink);
+    outline: none;
+  }
+
+  .scene-content {
+    padding: 0 2.25rem 0;
+    color: var(--text-primary);
+  }
+
+  .scene-progress {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--purple1);
+    margin: 1rem 0 0.75rem 0;
+    user-select: none;
+  }
+
+  .scene-text {
+    font-family: Georgia, serif;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    text-align: justify;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+  .scene-text::first-letter {
+    float: left;
+    font-size: 3.75rem;
+    line-height: 1;
+    padding-right: 0.15em;
+    padding-left: 0.05em;
+    font-weight: 700;
+    color: var(--purple1);
+    font-family: Georgia, serif;
+  }
+
+  /* Bottom buttons container */
+  .bottom-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .bottom-buttons button,
+  .bottom-buttons a.btn-link {
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 0.85rem 2.5rem;
+    border-radius: 32px;
+    border: none;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .bottom-buttons button:hover,
+  .bottom-buttons button:focus-visible,
+  .bottom-buttons a.btn-link:hover,
+  .bottom-buttons a.btn-link:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* Podcast Overlay */
+  #podcast {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    z-index: 9999;
+  }
+  #podcast:target {
+    display: flex;
+  }
+
+  #podcast header {
+    font-weight: 900;
+    font-size: 2.25rem;
+    color: var(--purple1);
+    margin-bottom: 2rem;
+    user-select: none;
+    text-align: center;
+  }
+
+  .podcast-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-md);
+    max-width: 480px;
+    width: 100%;
+    padding: 2rem 2.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .podcast-cover {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--shadow-md);
+  }
+  .podcast-cover img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .podcast-title {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--pink);
+    text-align: center;
+    user-select: none;
+  }
+
+  .audio-player {
+    width: 100%;
+    background: #f3e9f9;
+    border-radius: 24px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    box-shadow: 0 0 12px var(--pink);
+  }
+  .audio-player button {
+    background: var(--pink);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--pink);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    position: relative;
+  }
+  .audio-player button:hover,
+  .audio-player button:focus-visible {
+    background-color: #d94a8a;
+    box-shadow: 0 0 20px var(--pink);
+    outline: none;
+  }
+  /* Play icon */
+  .audio-player button.play::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 14px;
+    border-style: solid;
+    border-width: 10px 0 10px 16px;
+    border-color: transparent transparent transparent white;
+  }
+  /* Pause icon */
+  .audio-player button.pause::before,
+  .audio-player button.pause::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    width: 6px;
+    height: 20px;
+    background: white;
+  }
+  .audio-player button.pause::before {
+    left: 14px;
+  }
+  .audio-player button.pause::after {
+    left: 26px;
+  }
+
+  /* Back to Story button */
+  #back-to-story {
+    margin-top: 2rem;
+    background: transparent;
+    color: var(--purple1);
+    font-weight: 600;
+    font-size: 1rem;
+    border: 2px solid var(--purple1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--purple1);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  #back-to-story:hover,
+  #back-to-story:focus-visible {
+    background: var(--purple1);
+    color: white;
+    box-shadow: 0 0 16px var(--pink);
+    outline: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .container {
+      margin: 2rem 1rem 4rem;
+      max-width: 100%;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .scene-card {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+    }
+    .scene-content {
+      padding: 0 1.5rem 0;
+    }
+    .scene-text {
+      font-size: 1rem;
+    }
+    .scene-text::first-letter {
+      font-size: 3rem;
+    }
+    .regenerate-btn {
+      margin: 0.5rem 1rem 1rem;
+      font-size: 0.85rem;
+      padding: 0.4rem 1rem;
+    }
+    .bottom-buttons {
+      gap: 1rem;
+    }
+    .bottom-buttons button,
+    .bottom-buttons a.btn-link {
+      font-size: 1rem;
+      padding: 0.75rem 2rem;
+    }
+    .audio-player button {
+      width: 40px;
+      height: 40px;
+    }
+    .audio-player button.play::before {
+      left: 14px;
+      top: 12px;
+      border-width: 8px 0 8px 12px;
+    }
+    .audio-player button.pause::before,
+    .audio-player button.pause::after {
+      top: 12px;
+      width: 5px;
+      height: 16px;
+    }
+    .audio-player button.pause::before {
+      left: 12px;
+    }
+    .audio-player button.pause::after {
+      left: 22px;
+    }
+    .scene-card:last-child {
+      margin-bottom: 1.5rem; /* smaller than default 3rem but enough spacing */
+}
+
+/* Adjust top margin of buttons container for balanced spacing */
+    .bottom-buttons {
+      margin-top: 1.5rem; /* slightly less than original 2rem */
+}
+    /* Reduce bottom margin of last scene card for proper spacing */
+
+
+  }
+</style>
+</head>
+<body>
+
+<div class="container" aria-label="Story Output Page">
+  <h1>Your Generated Story</h1>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 1">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 1 of 5</div>
+      <p class="scene-text">In the heart of the enchanted forest, the trees whispered secrets of ancient magic.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 2">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 2 of 5</div>
+      <p class="scene-text">The hero ventured through the misty mountains, guided only by the stars above.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 3">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 3 of 5</div>
+      <p class="scene-text">At the edge of the world, a mysterious portal shimmered, promising new adventures.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 4 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+4" alt="Scene 4 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 4">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 4 of 5</div>
+      <p class="scene-text">The journey led to an ancient city lost in time, filled with wonders and dangers alike.</p>
+    </div>
+  </article>
+
+  <article class="scene-card" tabindex="0" aria-label="Scene 5 of 5">
+    <img src="https://via.placeholder.com/600x400?text=Scene+5" alt="Scene 5 image" class="scene-image" />
+    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 5">🔄 Regenerate Image</button>
+    <div class="scene-content">
+      <div class="scene-progress">Scene 5 of 5</div>
+      <p class="scene-text">In the final confrontation, courage and friendship proved stronger than any dark force.</p>
+    </div>
+  </article>
+
+  <div class="bottom-buttons" role="group" aria-label="Story output actions">
+    <button type="button" aria-label="Download story as PDF">⬇️ Download as PDF</button>
+    <button type="button" aria-label="Save story to library">💾 Save to Library</button>
+    <a href="#podcast" class="btn-link" aria-label="Turn story into a podcast">🎙️ Turn it into a Podcast</a>
+  </div>
+</div>
+
+<!-- Podcast Overlay -->
+<section id="podcast" aria-label="Podcast Mode" tabindex="-1">
+  <header>Podcast Mode 🎧</header>
+  <div class="podcast-card" role="region" aria-label="Podcast player">
+    <div class="podcast-cover">
+      <img src="https://via.placeholder.com/600x400?text=Podcast+Cover" alt="Podcast cover image" />
+    </div>
+    <div class="podcast-title">Your Generated Story Podcast</div>
+    <div class="audio-player" aria-label="Audio player controls">
+      <button class="play" aria-label="Play podcast"></button>
+      <button class="pause" aria-label="Pause podcast"></button>
+    </div>
+  </div>
+  <a href="#" id="back-to-story" class="btn-link" aria-label="Back to story output">⬅ Back to Story</a>
+</section>
+
+<style>
+  /* Podcast Overlay styles */
+  #podcast {
+    position: fixed;
+    inset: 0;
+    background: rgba(251, 243, 252, 0.95);
+    backdrop-filter: blur(12px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    z-index: 9999;
+  }
+  #podcast:target {
+    display: flex;
+  }
+  #podcast header {
+    font-weight: 900;
+    font-size: 2.25rem;
+    color: var(--purple1);
+    margin-bottom: 2rem;
+  }

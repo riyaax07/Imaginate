@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryTrade - Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --purple1: #9933ff;
+            --purple2: #ab2b8f;
+            --pink: #d63277;
+            --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+            --bg-light: #fbf3fc;
+            --card-bg: #fff;
+            --shadow-light: rgba(102, 61, 255, 0.06);
+            --shadow-md: rgba(102, 61, 255, 0.15);
+            --border-light: #d7e2ea;
+            --text-primary: #3d4a58;
+            --text-secondary: #596979;
+            --gold: #f5c518;
+            --green: #4CAF50;
+            --red: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 15px var(--shadow-light);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: color 0.3s;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--purple1);
+            background: rgba(153, 51, 255, 0.1);
+        }
+
+        .coin-balance {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 197, 24, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Wallet Overview Card */
+        .wallet-overview {
+            background: linear-gradient(135deg, #a166ff, #ff6b9d);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(160, 102, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-overview::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .wallet-overview h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .wallet-overview p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Wallet Cards Section */
+        .wallet-section-title {
+            font-size: 1.8rem;
+            color: var(--purple1);
+            margin: 2.5rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .wallet-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .wallet-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .wallet-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(102, 61, 255, 0.2);
+            border-color: var(--purple1);
+        }
+
+        .wallet-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .wallet-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--purple1);
+        }
+
+        .wallet-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .coin-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Transaction History */
+        .transaction-history {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            color: var(--purple1);
+            font-weight: 700;
+        }
+
+        .transaction-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .transaction-table tr:nth-child(even) {
+            background-color: rgba(251, 243, 252, 0.5);
+        }
+
+        .transaction-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .coin-change {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .coin-change.positive {
+            color: var(--green);
+        }
+
+        .coin-change.negative {
+            color: var(--red);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .wallet-cards {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .wallet-overview h2 {
+                font-size: 2rem;
+            }
+            
+            .wallet-overview p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .wallet-overview {
+                padding: 1.5rem;
+            }
+            
+            .wallet-card {
+                padding: 1.5rem;
+            }
+            
+            .transaction-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wallet-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .wallet-overview h2 {
+                font-size: 1.8rem;
+            }
+            
+            .coin-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">StoryTrade</div>
+        <nav>
+            <ul>
+                <li><a href="#">Marketplace</a></li>
+                <li><a href="#" class="active">Wallet</a></li>
+                <li><a href="#">My Stories</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+        <div class="coin-balance">
+            <i class="fas fa-coins"></i>
+            <span>120 Story Coins</span>
+        </div>
+    </header>
+
+    <!-- Wallet Section -->
+    <div class="container">
+        <h1 class="section-title">Your Wallet</h1>
+        
+        <!-- Wallet Overview -->
+        <div class="wallet-overview">
+            <h2><i class="fas fa-wallet"></i> My Story Coins: 120</h2>
+            <p>Earn coins by publishing stories, receiving upvotes, and trading</p>
+        </div>
+        
+        <!-- Ways to Earn -->
+        <h2 class="wallet-section-title"><i class="fas fa-plus-circle"></i> Ways to Earn</h2>
+        <div class="wallet-cards">
+            <!-- Card 1 -->
+            <div class="wallet-card">
+                <div class="card-icon">📚</div>
+                <h3>Publish a Story</h3>
+                <p>Share your creative stories with the community</p>
+                <div class="coin-value">
+                    <i class="fas fa-plus"></i>
+                    <span>10 Coins</span>
+                </div>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="wallet-card">
+                <div class="card-icon">👍</div>
+                <h3>Get an Upvote</h3>
+                <p>Receive appreciation for your stories</p>
+                <div class="coin-value">
+                    <i class="fas fa-plus"></i>
+                    <span>1 Coin</span>
+                </div>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="wallet-card">
+                <div class="card-icon">🔥</div>
+                <h3>Daily Login Streak</h3>
+                <p>Log in daily to maintain your streak</p>
+                <div class="coin-value">
+                    <i class="fas fa-plus"></i>
+                    <span>5 Coins</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ways to Spend -->
+        <h2 class="wallet-section-title"><i class="fas fa-minus-circle"></i> Ways to Spend</h2>
+        <div class="wallet-cards">
+            <!-- Card 1 -->
+            <div class="wallet-card">
+                <div class="card-icon">🔒</div>
+                <h3>Unlock Private Stories</h3>
+                <p>Access exclusive content from other creators</p>
+                <div class="coin-value">
+                    <i class="fas fa-minus"></i>
+                    <span>20 Coins</span>
+                </div>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="wallet-card">
+                <div class="card-icon">🎙️</div>
+                <h3>Premium Podcast Voices</h3>
+                <p>Enhance your podcast with professional voices</p>
+                <div class="coin-value">
+                    <i class="fas fa-minus"></i>
+                    <span>30 Coins</span>
+                </div>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="wallet-card">
+                <div class="card-icon">🎨</div>
+                <h3>Exclusive Art Styles</h3>
+                <p>Unlock unique visual styles for your stories</p>
+                <div class="coin-value">
+                    <i class="fas fa-minus"></i>
+                    <span>25 Coins</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transaction History -->
+        <div class="transaction-history">
+            <h2 class="wallet-section-title"><i class="fas fa-history"></i> Transaction History</h2>
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Coins</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>05 Sept 2025</td>
+                        <td>Published Story</td>
+                        <td class="coin-change positive">+10</td>
+                    </tr>
+                    <tr>
+                        <td>06 Sept 2025</td>
+                        <td>Traded Story</td>
+                        <td class="coin-change negative">-15</td>
+                    </tr>
+                    <tr>
+                        <td>06 Sept 2025</td>
+                        <td>Upvote Received</td>
+                        <td class="coin-change positive">+1</td>
+                    </tr>
+                    <tr>
+                        <td>07 Sept 2025</td>
+                        <td>Daily Login Streak</td>
+                        <td class="coin-change positive">+5</td>
+                    </tr>
+                    <tr>
+                        <td>08 Sept 2025</td>
+                        <td>Unlocked Private Story</td>
+                        <td class="coin-change negative">-20</td>
+                    </tr>
+                    <tr>
+                        <td>09 Sept 2025</td>
+                        <td>Published Story</td>
+                        <td class="coin-change positive">+10</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Simple navigation functionality
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Remove active class from all links
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // In a real implementation, you would show the corresponding section here
+                // For this demo, we're only showing the wallet section
+            });
+        });
+    </script>
+</body>
+</html>

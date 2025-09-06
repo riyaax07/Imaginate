@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryTrade - Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --purple1: #9933ff;
+            --purple2: #ab2b8f;
+            --pink: #d63277;
+            --gradient: linear-gradient(90deg, #7c33f5 0%, #d63277 100%);
+            --bg-light: #fbf3fc;
+            --card-bg: #fff;
+            --shadow-light: rgba(102, 61, 255, 0.06);
+            --shadow-md: rgba(102, 61, 255, 0.1);
+            --border-input: #d7e2ea;
+            --text-primary: #3d4a58;
+            --text-secondary: #596979;
+            --gold: #f5c518;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 15px var(--shadow-light);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: color 0.3s;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--purple1);
+            background: rgba(153, 51, 255, 0.1);
+        }
+
+        .coin-balance {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 197, 24, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Marketplace Feed */
+        .feed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .story-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(102, 61, 255, 0.2);
+        }
+
+        .card-image {
+            height: 200px;
+            background: linear-gradient(45deg, #7c33f5, #d63277);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--purple1);
+        }
+
+        .card-preview {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .author {
+            font-weight: 600;
+        }
+
+        .genre {
+            background: rgba(153, 51, 255, 0.1);
+            color: var(--purple1);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .private-badge {
+            background: var(--pink);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(214, 50, 119, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(214, 50, 119, 0.4);
+        }
+
+        /* Story Details Modal */
+        #story-details {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        #story-details:target {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--pink);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            text-decoration: none;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(214, 50, 119, 0.3);
+        }
+
+        .modal-header {
+            height: 300px;
+            background: linear-gradient(45deg, #7c33f5, #d63277);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .story-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--purple1);
+        }
+
+        .story-text {
+            font-family: Georgia, serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+
+        .story-text::first-letter {
+            font-size: 3.5rem;
+            float: left;
+            line-height: 1;
+            margin-right: 0.5rem;
+            color: var(--purple1);
+            font-weight: 800;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+        }
+
+        .btn-upvote {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        }
+
+        .btn-unlock {
+            background: linear-gradient(45deg, #FF9800, #FFC107);
+        }
+
+        .btn-podcast {
+            background: linear-gradient(45deg, #2196F3, #03A9F4);
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 3rem;
+        }
+
+        .reviews-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--purple1);
+            border-bottom: 2px solid var(--border-input);
+            padding-bottom: 0.5rem;
+        }
+
+        .reviews-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .review-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px var(--shadow-light);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer {
+            font-weight: 700;
+            color: var(--purple1);
+        }
+
+        .stars {
+            color: var(--gold);
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Wallet Section */
+        .wallet-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 25px var(--shadow-light);
+            margin: 3rem 0;
+        }
+
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .balance {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .wallet-category {
+            margin-bottom: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--purple1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wallet-cards {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .wallet-card {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 15px var(--shadow-light);
+        }
+
+        .wallet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 61, 255, 0.2);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--purple1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+
+        .card-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .coins {
+            color: var(--gold);
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-input);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .feed-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .modal-header {
+                height: 200px;
+            }
+            
+            .wallet-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feed-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .story-title {
+                font-size: 1.1rem;
+            }
+            
+            .modal-body {
+                padding: 1.5rem;
+            }
+            
+            .story-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">StoryTrade</div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Marketplace</a></li>
+                <li><a href="#wallet">Wallet</a></li>
+                <li><a href="#">My Stories</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+        <div class="coin-balance">
+            <i class="fas fa-coins"></i>
+            <span>120 Story Coins</span>
+        </div>
+    </header>
+
+    <!-- Marketplace Feed -->
+    <div class="container">
+        <h1 class="section-title">Story Marketplace</h1>
+        
+        <div class="feed-grid">
+            <!-- Story Card 1 -->
+            <div class="story-card">
+                <div class="card-image">Enchanted Forest Cover</div>
+                <div class="card-content">
+                    <h3 class="card-title">The Enchanted Forest</h3>
+                    <div class="private-badge">🔒 Private</div>
+                    <p class="card-preview">A magical journey through a forest filled with ancient secrets and mystical creatures that will captivate your imagination.</p>
+                    <div class="card-meta">
+                        <span class="author">By Jane Doe</span>
+                        <span class="genre">Fantasy</span>
+                    </div>
+                    <a href="#story-details" class="btn">📖 View / Trade</a>
+                </div>
+            </div>
+            
+            <!-- Story Card 2 -->
+            <div class="story-card">
+                <div class="card-image">Space Odyssey Cover</div>
+                <div class="card-content">
+                    <h3 class="card-title">Space Odyssey</h3>
+                    <p class="card-preview">Join the crew of the starship Aurora on an epic journey through uncharted galaxies where danger and wonder await at every turn.</p>
+                    <div class="card-meta">
+                        <span class="author">By Alex Smith</span>
+                        <span class="genre">Sci-Fi</span>
+                    </div>
+                    <a href="#

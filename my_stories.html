@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StoryTrade - My Stories</title>
+<style>
+  :root {
+    --purple1: #9933ff;
+    --pink: #d63277;
+    --blue1: #7c9eff;
+    --bg-light: #fbf3fc;
+    --card-bg: #fff;
+    --shadow-light: rgba(102, 61, 255, 0.06);
+    --shadow-md: rgba(102, 61, 255, 0.15);
+    --border-light: #d7e2ea;
+    --text-primary: #3d4a58;
+    --text-secondary: #596979;
+    --gold: #f5c518;
+    --font-serif: Georgia, serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  }
+
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    position: relative;
+  }
+  a, button {
+    font-family: inherit;
+    text-decoration: none;
+    color: inherit;
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto 6rem;
+    padding: 0 1rem;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .page-header-left {
+    max-width: 70%;
+  }
+  .page-header h1 {
+    font-weight: 900;
+    font-size: 2.5rem;
+    color: var(--purple1);
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .page-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+    user-select: none;
+  }
+
+  /* Coin Wallet Mini Card */
+  .wallet-mini {
+    background: linear-gradient(135deg, #a166ff, #ff6b9d);
+    color: white;
+    border-radius: 20px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(160, 102, 255, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    user-select: none;
+    min-width: 220px;
+  }
+  .wallet-mini .coin-icon {
+    font-size: 1.8rem;
+  }
+  .wallet-mini .coins-text {
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-grow: 1;
+  }
+  .wallet-mini .btn-view-wallet {
+    background: rgba(255 255 255 / 0.3);
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    box-shadow: 0 0 8px rgba(255 255 255 / 0.4);
+    transition: background-color 0.3s ease;
+  }
+  .wallet-mini .btn-view-wallet:hover,
+  .wallet-mini .btn-view-wallet:focus-visible {
+    background: rgba(255 255 255 / 0.6);
+    outline: none;
+  }
+
+  /* Story Grid */
+  .story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 2rem;
+  }
+  .story-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+  .story-card:hover,
+  .story-card:focus-within {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px var(--pink);
+    outline: none;
+    z-index: 1;
+  }
+  .story-cover {
+    height: 180px;
+    background: linear-gradient(45deg, #7c33f5, #d63277);
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+  .story-content {
+    padding: 1rem 1.25rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .story-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--purple1);
+    margin-bottom: 0.3rem;
+    font-family: var(--font-serif);
+  }
+  .story-preview {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    flex-grow: 1;
+  }
+  .story-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+  .genre-tag {
+    background: var(--blue1);
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 12px;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .last-updated {
+    font-style: italic;
+  }
+  .private-lock {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 1.2rem;
+    color: var(--pink);
+    user-select: none;
+  }
+  .story-buttons {
+    display: flex;
+    gap: 0.8rem;
+  }
+  .story-buttons a {
+    flex: 1;
+    background: var(--gradient);
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    border-radius: 32px;
+    text-align: center;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  .story-buttons a:hover,
+  .story-buttons a:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+
+  /* Mood-Based Background Music Player */
+  .music-player {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: #e6e0ff;
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(124, 51, 245, 0.3);
+    padding: 1rem 1.5rem;
+    width: 320px;
+    font-family: var(--font-sans);
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 9999;
+  }
+  .music-player .icon {
+    font-size: 1.8rem;
+    color: var(--purple1);
+    flex-shrink: 0;
+  }
+  .music-player .info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .music-player .info .label {
+    font-weight: 700;
+    color: var(--purple1);
+    font-size: 1rem;
+  }
+  .music-player .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .music-player button {
+    background: var(--pink);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--pink);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .music-player button:hover,
+  .music-player button:focus-visible {
+    background-color: #b63a9b;
+    box-shadow: 0 0 24px var(--pink);
+    outline: none;
+  }
+  .music-player select {
+    border-radius: 16px;
+    border: 1.5px solid var(--border-light);
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: white;
+    cursor: pointer;
+    user-select: none;
+  }
+  .music-player input[type="range"] {
+    width: 80px;
+    cursor: pointer;
+  }
+
+  /* Mobile: collapsed music player */
+  @media (max-width: 480px) {
+    .music-player {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      padding: 0;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(124, 51, 245, 0.5);
+      transition: width 0.3s ease, height 0.3s ease, padding 0.3s ease;
+      overflow: hidden;
+    }
+    .music-player.expanded {
+      width: 320px;
+      height: auto;
+      padding: 1rem 1.5rem;
+      border-radius: 24px;
+    }
+    .music-player .icon {
+      font-size: 1.8rem;
+    }
+    .music-player .info,
+    .music-player .controls {
+      display: none;
+    }
+    .music-player.expanded .info,
+    .music-player.expanded .controls {
+      display: flex;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>📚 My Stories</h1>
+      <p>View, edit, and share your creations.</p>
+    </div>
+    <!-- Coin Wallet Mini Card -->
+    <div class="wallet-mini" aria-label="Coin Wallet">
+      <div class="coin-icon">💰</div>
+      <div class="coins-text">250 Story Coins</div>
+      <a href="#" class="btn-view-wallet" aria-label="View Wallet">View Wallet</a>
+    </div>
+  </div>
+
+  <!-- Story Grid -->
+  <div class="story-grid" role="list">
+    <!-- Story Card 1 -->
+    <article class="story-card" role="listitem" aria-label="Story: The Enchanted Garden">
+      <div class="story-cover" aria-hidden="true">Cover Image</div>
+      <div class="story-content">
+        <h2 class="story-title">The Enchanted Garden</h2>
+        <p class="story-preview">A magical tale of a hidden garden that changes the lives of those who find it.</p>
+        <div class="story-meta">
+          <span class="genre-tag" aria-label="Genre Fantasy">Fantasy</span>
+          <time class="last-updated" datetime="2025-09-05T14:30">Last updated: 5 Sept 2025</time>
+        </div>
+        <div class="story-buttons">
+          <a href="#" aria-label="View The Enchanted Garden">▶ View</a>
+          <a href="#" aria-label="Remix The Enchanted Garden">🔄 Remix</a>
+          <a href="#" aria-label="Make The Enchanted Garden Private">💎 Make Private</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Story Card 2 (Private) -->
+    <article class="story-card" role="listitem" aria-label="Story: Midnight Whispers">
+      <div class="story-cover" aria-hidden="true">Cover Image</div>
+      <div class="private-lock" aria-label="Private Story">🔒</div>
+      <div class="story-content">
+        <h2 class="story-title">Midnight Whispers</h2>
+        <p class="story-preview">A suspenseful journey through secrets whispered in the dead of night.</p>
+        <div class="story-meta">
+          <span class="genre-tag" aria-label="Genre Suspense">Suspense</span>
+          <time class="last-updated" datetime="2025-09-03T09:15">Last updated: 3 Sept 2025</time>
+        </div>
+        <div class="story-buttons">
+          <a href="#" aria-label="View Midnight Whispers">▶ View</a>
+          <a href="#" aria-label="Remix Midnight Whispers">🔄 Remix</a>
+          <a href="#" aria-label="Make Midnight Whispers Public">💎 Make Public</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Story Card 3 -->
+    <article class="story-card" role="listitem" aria-label="Story: Love in the Time of Stars">
+      <div class="story-cover" aria-hidden="true">Cover Image</div>
+      <div class="story-content">
+        <h2 class="story-title">Love in the Time of Stars</h2>
+        <p class="story-preview">A romantic saga set among the stars, where love transcends time and space.</p>
+        <div class="story-meta">
+          <span class="genre-tag" aria-label="Genre Romance">Romance</span>
+          <time class="last-updated" datetime="2025-09-01T18:00">Last updated: 1 Sept 2025</time>
+        </div>
+        <div class="story-buttons">
+          <a href="#" aria-label="View Love in the Time of Stars">▶ View</a>
+          <a href="#" aria-label="Remix Love in the Time of Stars">🔄 Remix</a>
+          <a href="#" aria-label="Make Love in the Time of Stars Private">💎 Make Private</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- Mood-Based Background Music Player -->
+<div class="music-player" role="region" aria-label="Mood-Based Background Music Player" tabindex="0">
+  <div class="icon" aria-hidden="true">🎵</div>
+  <div class="info">
+    <div class="label">Background Music – Mood: Calm</div>
+    <div class="controls">
+      <button aria-label="Play music" title="Play">▶️</button>
+      <select aria-label="Select mood">
+        <option value="calm" selected>Calm</option>
+        <option value="romantic">Romantic</option>
+        <option value="epic">Epic</option>
+        <option value="suspense">Suspense</option>
+        <option value="fantasy">Fantasy</option>
+      </select>
+      <input type="range" min="0" max="100" value="50" aria-label="Volume slider" />
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
