@@ -415,60 +415,30 @@
 </style>
 </head>
 <body>
+  <!-- Navbar -->
+  
+
 
 <div class="container" aria-label="Story Output Page">
+  <div class="container" aria-label="Story Output Page">
   <h1>Your Generated Story</h1>
 
-  <article class="scene-card" tabindex="0" aria-label="Scene 1 of 5">
-    <img src="https://via.placeholder.com/600x400?text=Scene+1" alt="Scene 1 image" class="scene-image" />
-    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 1">🔄 Regenerate Image</button>
-    <div class="scene-content">
-      <div class="scene-progress">Scene 1 of 5</div>
-      <p class="scene-text">In the heart of the enchanted forest, the trees whispered secrets of ancient magic.</p>
+  <!-- This container will be filled by JS -->
+  <div id="story-container" aria-live="polite">
+    <!-- Loading placeholder -->
+    <div id="loading" style="text-align:center; padding: 3rem 0;">
+      <strong>Generating your story & illustrations…</strong>
+      <div style="margin-top:1rem;">Please wait — this may take ~15–30s for first run.</div>
     </div>
-  </article>
-
-  <article class="scene-card" tabindex="0" aria-label="Scene 2 of 5">
-    <img src="https://via.placeholder.com/600x400?text=Scene+2" alt="Scene 2 image" class="scene-image" />
-    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 2">🔄 Regenerate Image</button>
-    <div class="scene-content">
-      <div class="scene-progress">Scene 2 of 5</div>
-      <p class="scene-text">The hero ventured through the misty mountains, guided only by the stars above.</p>
-    </div>
-  </article>
-
-  <article class="scene-card" tabindex="0" aria-label="Scene 3 of 5">
-    <img src="https://via.placeholder.com/600x400?text=Scene+3" alt="Scene 3 image" class="scene-image" />
-    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 3">🔄 Regenerate Image</button>
-    <div class="scene-content">
-      <div class="scene-progress">Scene 3 of 5</div>
-      <p class="scene-text">At the edge of the world, a mysterious portal shimmered, promising new adventures.</p>
-    </div>
-  </article>
-
-  <article class="scene-card" tabindex="0" aria-label="Scene 4 of 5">
-    <img src="https://via.placeholder.com/600x400?text=Scene+4" alt="Scene 4 image" class="scene-image" />
-    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 4">🔄 Regenerate Image</button>
-    <div class="scene-content">
-      <div class="scene-progress">Scene 4 of 5</div>
-      <p class="scene-text">The journey led to an ancient city lost in time, filled with wonders and dangers alike.</p>
-    </div>
-  </article>
-
-  <article class="scene-card" tabindex="0" aria-label="Scene 5 of 5">
-    <img src="https://via.placeholder.com/600x400?text=Scene+5" alt="Scene 5 image" class="scene-image" />
-    <button class="regenerate-btn" type="button" aria-label="Regenerate image for scene 5">🔄 Regenerate Image</button>
-    <div class="scene-content">
-      <div class="scene-progress">Scene 5 of 5</div>
-      <p class="scene-text">In the final confrontation, courage and friendship proved stronger than any dark force.</p>
-    </div>
-  </article>
+  </div>
 
   <div class="bottom-buttons" role="group" aria-label="Story output actions">
-    <button type="button" aria-label="Download story as PDF">⬇️ Download as PDF</button>
-    <button type="button" aria-label="Save story to library">💾 Save to Library</button>
-    <a href="#podcast" class="btn-link" aria-label="Turn story into a podcast">🎙️ Turn it into a Podcast</a>
+    <button id="download-pdf" type="button" aria-label="Download story as PDF">⬇️ Download as PDF</button>
+    <button id="save-library" type="button" aria-label="Save story to library">💾 Save to Library</button>
+    <a id="to-podcast" class="btn-link" href="podcast.html" aria-label="Turn into podcast">🎙️ Turn it into Podcast</a>
   </div>
+</div>
+
 </div>
 
 <!-- Podcast Overlay -->
@@ -486,6 +456,111 @@
   </div>
   <a href="#" id="back-to-story" class="btn-link" aria-label="Back to story output">⬅ Back to Story</a>
 </section>
+<script>
+(async function(){
+  const storyContainer = document.getElementById("story-container");
+  const loadingElem = document.getElementById("loading");
+
+  const storyDataRaw = localStorage.getItem("storyData");
+  if (!storyDataRaw) {
+    storyContainer.innerHTML = '<p style="text-align:center">No story saved. Go to the idea input page to create one.</p>';
+    return;
+  }
+
+  const storyData = JSON.parse(storyDataRaw);
+
+  // Show loading
+  loadingElem && (loadingElem.style.display = "block");
+
+  // 1) Request the backend to generate the story scenes
+  try {
+    const storyRes = await fetch("http://127.0.0.1:8000/generate_story", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(storyData)
+    });
+    if (!storyRes.ok) throw new Error("Story API error");
+    const storyJson = await storyRes.json();
+    const scenes = Array.isArray(storyJson.scenes) ? storyJson.scenes : [storyJson.story || ""];
+    // 2) For each scene, request an image and render
+    storyContainer.innerHTML = ""; // clear loading
+
+    for (let i=0;i<scenes.length;i++){
+      const sceneText = scenes[i].trim();
+
+      // Render a placeholder card first (so user sees progressive rendering)
+      const card = document.createElement("article");
+      card.className = "scene-card";
+      card.tabIndex = 0;
+      card.innerHTML = `
+        <img src="https://via.placeholder.com/600x400?text=Generating..." alt="Scene ${i+1} image" class="scene-image" id="img-${i}">
+        <button class="regenerate-btn" type="button" data-index="${i}">🔄 Regenerate Image</button>
+        <div class="scene-content">
+          <div class="scene-progress">Scene ${i+1} of ${scenes.length}</div>
+          <p class="scene-text" id="text-${i}"></p>
+        </div>
+      `;
+      storyContainer.appendChild(card);
+
+      // Put the text
+      document.getElementById(`text-${i}`).innerText = sceneText;
+
+      // Call image API for this scene
+      const imgRes = await fetch("http://127.0.0.1:8000/generate_image", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ prompt: sceneText })
+      });
+      if (!imgRes.ok) throw new Error("Image API error");
+      const imgJson = await imgRes.json();
+      document.getElementById(`img-${i}`).src = imgJson.image_url;
+    }
+
+    // wire up regenerate buttons
+    document.querySelectorAll(".regenerate-btn").forEach(btn => {
+      btn.addEventListener("click", async function(){
+        const idx = this.getAttribute("data-index");
+        const sceneText = document.getElementById(`text-${idx}`).innerText;
+        this.disabled = true;
+        this.innerText = "Generating...";
+        try {
+          const resp = await fetch("http://127.0.0.1:8000/generate_image", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ prompt: sceneText })
+          });
+          const j = await resp.json();
+          document.getElementById(`img-${idx}`).src = j.image_url;
+        } catch (err) {
+          alert("Image generation failed.");
+        } finally {
+          this.disabled = false;
+          this.innerText = "🔄 Regenerate Image";
+        }
+      });
+    });
+
+  } catch (err) {
+    console.error(err);
+    storyContainer.innerHTML = '<p style="text-align:center;color:#b00020">Failed to generate story. Make sure backend is running.</p>';
+  } finally {
+    loadingElem && (loadingElem.style.display = "none");
+  }
+
+  // Save to Library button - just navigate to my_stories (placeholder behavior)
+  document.getElementById("save-library").addEventListener("click", function(){
+    // You could POST to /save_story here. For demo, redirect.
+    window.location.href = "my_stories.html";
+  });
+
+  // Download as PDF - placeholder: you can later implement server-side or client-side PDF generation
+  document.getElementById("download-pdf").addEventListener("click", function(){
+    alert("PDF export not implemented in demo. Hook this to server-side PDF or client-side library (jsPDF).");
+  });
+
+})();
+</script>
+</body>
 
 <style>
   /* Podcast Overlay styles */

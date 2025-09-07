@@ -329,41 +329,45 @@
 
 <!-- Story Input Page -->
 <section id="story-input-page" class="centered-viewport" aria-label="Story Input Page">
-  <form class="card" aria-describedby="input-desc" novalidate>
-    <label for="story-textarea">Enter your story idea here...</label>
-    <textarea id="story-textarea" name="story" placeholder="Enter your story idea here..." required aria-required="true"></textarea>
+  <!-- Enter Idea form (put this in enter_idea.html where the form should be) -->
+<form id="ideaForm" class="idea-form" aria-label="Enter story idea">
+  <label for="story-textarea">Your idea</label>
+  <textarea id="story-textarea" required rows="4" placeholder="A lonely robot finds a flower..."></textarea>
 
-    <label for="genre-select">Genre</label>
-    <select id="genre-select" name="genre" required aria-required="true">
-      <option value="" disabled selected>Select genre</option>
-      <option>Fantasy</option>
-      <option>Sci-Fi</option>
-      <option>Mystery</option>
-      <option>Comedy</option>
-      <option>Romance</option>
-      <option>Horror</option>
-    </select>
+  <div class="select-row">
+    <label>
+      Genre
+      <select id="genre-select">
+        <option>Fantasy</option>
+        <option>Sci-Fi</option>
+        <option>Mystery</option>
+        <option>Comedy</option>
+      </select>
+    </label>
 
-    <label for="tone-select">Tone</label>
-    <select id="tone-select" name="tone" required aria-required="true">
-      <option value="" disabled selected>Select tone</option>
-      <option>Dark</option>
-      <option>Lighthearted</option>
-      <option>Epic</option>
-      <option>Humorous</option>
-      <option>Serious</option>
-    </select>
+    <label>
+      Tone
+      <select id="tone-select">
+        <option>Lighthearted</option>
+        <option>Dark</option>
+        <option>Epic</option>
+      </select>
+    </label>
 
-    <label for="audience-select">Target Audience</label>
-    <select id="audience-select" name="audience" required aria-required="true">
-      <option value="" disabled selected>Select audience</option>
-      <option>Kids</option>
-      <option>Teens</option>
-      <option>Adults</option>
-    </select>
+    <label>
+      Audience
+      <select id="audience-select">
+        <option>Kids</option>
+        <option>Teens</option>
+        <option>Adults</option>
+      </select>
+    </label>
+  </div>
 
-    <button type="submit" class="btn-primary" aria-label="Generate Story">Generate Story</button>
-  </form>
+  <button type="submit" class="primary-btn">Generate Story</button>
+</form>
+
+ 
 </section>
 
 <!-- Story Output Page -->
@@ -432,6 +436,31 @@
   </div>
   <a href="#story-output-page" id="back-to-story" class="btn-link" aria-label="Back to story output">⬅ Back to Story</a>
 </section>
+<script>
+document.getElementById("ideaForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const idea = document.getElementById("story-textarea").value.trim();
+  const genre = document.getElementById("genre-select").value;
+  const tone = document.getElementById("tone-select").value;
+  const audience = document.getElementById("audience-select").value;
+
+  if (!idea) {
+    alert("Please enter an idea first.");
+    return;
+  }
+
+  // Save the data locally so output.html can read it
+  localStorage.setItem("storyData", JSON.stringify({
+    idea, genre, tone, audience
+  }));
+
+  // Redirect to output page (hub)
+  window.location.href = "output.html";
+});
+</script>
+
+
+</body>
 
 <style>
   /* Podcast Overlay styles */
